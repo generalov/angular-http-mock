@@ -15,7 +15,6 @@
       "prefix": "angular-http-mock",
       "mobile": false,
       "styles": [
-        "styles.css"
       ],
       "scripts": [],
       "environments": {
@@ -33,7 +32,6 @@
     }
   },
   "defaults": {
-    "styleExt": "css",
     "prefixInterfaces": false
   }
 }

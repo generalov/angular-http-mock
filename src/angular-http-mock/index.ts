@@ -1,2 +1,2 @@
-export * from './http-mock.module';
-export * from './http-mock';
+export {HttpMockModule} from './src/http-mock.module';
+export {HttpMock} from './src/http-mock';

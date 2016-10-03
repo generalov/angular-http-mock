@@ -1,17 +1,36 @@
 {
   "compilerOptions": {
-    "declaration": false,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "lib": ["es6", "dom"],
-    "mapRoot": "./",
+    "stripInternal": true,
+    "removeComments": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "lib": [
+      "es6",
+      "dom"
+    ],
     "module": "es6",
     "moduleResolution": "node",
-    "outDir": "../dist/out-tsc",
+    "outDir": "../dist",
+    "baseUrl": ".",
+    "rootDir": ".",
     "sourceMap": true,
+    "inlineSources": true,
     "target": "es5",
     "typeRoots": [
       "../node_modules/@types"
     ]
-  }
+  },
+  "files": [
+    "typings.d.ts",
+    "angular-http-mock/index.ts"
+  ],
+  "exclude": [
+    "environments/*",
+    "test.ts",
+    "polyfills.ts",
+    "**/*.spec.ts"
+  ]
 }

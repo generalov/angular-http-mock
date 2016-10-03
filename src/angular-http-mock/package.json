@@ -1,0 +1,27 @@
+{
+  "name": "@generalov/angular-http-mock",
+  "version": "2.0.0-beta.5",
+  "keywords": [
+    "angular2",
+    "testing",
+    "mocking",
+    "http"
+  ],
+  "description": "A utility library for mocking out the requests in Angular2 Http module.",
+  "main": "bundles/angular-http-mock.umd.js",
+  "module": "index.js",
+  "typings": "index.d.ts",
+  "author": "Evgeniy Generalov <e.generalov@gmail.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "rxjs": "5.0.0-beta.12",
+    "@angular/core": "^2.0.0",
+    "@angular/platform-browser": "^2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/generalov/angular-http-mock.git"
+  },
+  "bugs": "https://github.com/generalov/angular-http-mock/issues",
+  "private": false
+}
