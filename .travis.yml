@@ -4,6 +4,10 @@ dist: trusty
 node_js:
   - '6.6.0'
 
+branches:
+  only:
+    - master
+
 addons:
   apt:
     sources:
