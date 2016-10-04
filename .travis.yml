@@ -16,6 +16,9 @@ cache:
   directories:
      - ./node_modules
      - ./.chrome/chromium
+addons:
+    code_climate:
+        repo_token: bb08d8334678177970aee11dd0212a3029d41f0ef4d008685566b1b2047d7224
 
 before_install:
   - export CHROME_BIN=chromium-browser
@@ -26,5 +29,8 @@ before_script:
 - npm install -g angular-cli
 - npm install -g karma
 - npm install
+
+after_script:
+  - codeclimate-test-reporter < ./coverage/coverage.lcov
 
 script: karma start karma.conf.js --single-run
