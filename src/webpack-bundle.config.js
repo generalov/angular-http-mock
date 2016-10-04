@@ -1,5 +1,7 @@
-const path = require("path");
-const webpack = require("webpack");
+/* eslint node: true */
+const path = require('path');
+const webpack = require('webpack');
+
 module.exports = {
   devtool: false,
   context: path.join(__dirname, "../dist/angular-http-mock"),
@@ -23,4 +25,4 @@ module.exports = {
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin()
   ]
-}
+};
