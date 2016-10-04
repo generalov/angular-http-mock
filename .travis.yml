@@ -27,6 +27,7 @@ before_install:
   - npm install -g npm
   - npm config set spin false
   - npm config set progress false
+  - npm config set cache-min 9999999
   - npm install --no-optional -g angular-cli
   - npm install --no-optional -g karma
 
