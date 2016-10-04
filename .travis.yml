@@ -1,0 +1,40 @@
+language: node_js
+sudo: required
+dist: trusty
+node_js:
+  - '6.6.0'
+
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+      - google-chrome-beta
+
+cache:
+  directories:
+     - ./node_modules
+     - ./.chrome/chromium
+addons:
+    code_climate:
+        repo_token: bb08d8334678177970aee11dd0212a3029d41f0ef4d008685566b1b2047d7224
+
+before_install:
+  - export CHROME_BIN=chromium-browser
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - npm install -g npm
+  - npm config set spin false
+  - npm config set progress false
+  - npm install --no-optional -g angular-cli
+  - npm install --no-optional -g karma
+
+install:
+  - npm install --no-optional
+
+script: karma start karma.conf.js --single-run
+
+after_script:
+  - codeclimate-test-reporter < ./coverage/coverage.lcov
+
