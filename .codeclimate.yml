@@ -1,0 +1,19 @@
+engines:
+  fixme:
+    enabled: true
+  eslint:
+    enabled: true
+    channel: "eslint-3"
+
+ratings:
+  paths:
+    - "**.js"
+    - "**.ts"
+
+exclude_paths:
+  - "node_modules/"
+  - "coverage/"
+  - "dist/"
+  - "scripts/"
+  - "karma.conf.js"
+  - "src/webpack-bundle.config.js"
