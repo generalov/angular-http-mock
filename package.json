@@ -5,6 +5,7 @@
   "scripts": {
     "clean": "rimraf ./dist/*",
     "lint": "tslint \"src/**/*.ts\"",
+    "lint:codeclimate": "node scripts/codeclimate.js analyze",
     "test": "ng test",
     "tsc": "tsc -p src",
     "build:bundle": "webpack --config src/webpack-bundle.config.js",

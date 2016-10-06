@@ -4,13 +4,18 @@ engines:
   eslint:
     enabled: true
     channel: "eslint-3"
+  markdownlint:
+    enabled: true
 
 ratings:
   paths:
     - "**.js"
     - "**.ts"
+    - "README.md"
 
 exclude_paths:
+  - ".idea/"
+  - ".git/"
   - "node_modules/"
   - "coverage/"
   - "dist/"
