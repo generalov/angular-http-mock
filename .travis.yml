@@ -21,8 +21,7 @@ cache:
      - ./node_modules
      - ./.chrome/chromium
 addons:
-    code_climate:
-        repo_token: bb08d8334678177970aee11dd0212a3029d41f0ef4d008685566b1b2047d7224
+    code_climate: {}
 
 before_install:
   - export CHROME_BIN=chromium-browser
@@ -34,6 +33,7 @@ before_install:
   - npm config set cache-min 9999999
   - npm install --no-optional -g angular-cli
   - npm install --no-optional -g karma
+  - npm install --no-optional -g codeclimate-test-reporter
 
 install:
   - npm install --no-optional
