@@ -19,27 +19,29 @@ describe('Basic usage', () => {
       imports: [HttpModule, HttpMockModule]
   })});
 
-  afterEach(inject([MockBackend], (backend: MockBackend) => 
+  afterEach(inject([MockBackend], (backend: MockBackend) =>
       backend.verifyNoPendingRequests()
   ));
 
   it('should mock response',
-    inject([Http, HttpMock], (service: Http, mock: HttpMock) => {
-      const fakeResponse = new ResponseOptions({
+    inject([HttpMock, Http], (mock: HttpMock, http: Http) => {
+      const nextFn = jasmine.createSpy('next');
+      const errorFn = jasmine.createSpy('error');
+      const options = {
         status: 200,
         body: 'ok'
-      });
-      mock.match({method: 'GET', url: 'http://testserver/api/'})
-          .andRespond(fakeResponse);
+      };
+      mock.match({url: 'http://testserver/api/'})
+          .andRespond(new ResponseOptions(options));
 
-      const nextFn = createSpy('next', (response: Response) => {
-        expect(response.url).toEqual('http://testserver/api/');
-        expect(response.status).toEqual(200);
-        expect(response.text()).toEqual('ok');
-      });
-      const errorFn = createSpy('error', (error: any) => {});
-
-      http.get('http://testserver/api/').subscribe(nextFn, errorFn);
+      http.get('http://testserver/api/').subscribe(
+        nextFn.and.callFake((response: Response) => {
+          expect(response.status).toEqual(200);
+          expect(response.url).toEqual('http://testserver/api/');
+          expect(response.text()).toEqual('ok');
+        }),
+        errorFn
+      );
 
       expect(nextFn).toHaveBeenCalled();
       expect(errorFn).not.toHaveBeenCalled();
@@ -77,3 +79,5 @@ MIT
 
 [angular-cli]: https://github.com/angular/angular-cli
 [karma]: https://karma-runner.github.io
+
+
