@@ -8,9 +8,6 @@
 
 A utility library for mocking out the requests in Angular2 Http module.
 
-This project was generated with [angular-cli][angular-cli]
-version 1.0.0-beta.15.
-
 ## Basic Usage
 
 ```TypeScript
@@ -22,7 +19,9 @@ describe('Basic usage', () => {
       imports: [HttpModule, HttpMockModule]
   })});
 
-  afterEach(inject([MockBackend], (backend: MockBackend) => backend.verifyNoPendingRequests()));
+  afterEach(inject([MockBackend], (backend: MockBackend) => 
+      backend.verifyNoPendingRequests()
+  ));
 
   it('should mock response',
     inject([Http, HttpMock], (service: Http, mock: HttpMock) => {
@@ -30,7 +29,8 @@ describe('Basic usage', () => {
         status: 200,
         body: 'ok'
       });
-      mock.match({method: 'GET', url: 'http://testserver/api/'}).andRespond(fakeResponse);
+      mock.match({method: 'GET', url: 'http://testserver/api/'})
+          .andRespond(fakeResponse);
 
       const nextFn = createSpy('next', (response: Response) => {
         expect(response.url).toEqual('http://testserver/api/');
@@ -67,6 +67,9 @@ Run `npm run test` to execute the unit tests via [Karma][karma].
 * [https://angular.io/docs/ts/latest/guide/testing.html](https://angular.io/docs/ts/latest/guide/testing.html)
 * [https://developers.livechatinc.com/blog/testing-angular-2-apps-routeroutlet-and-http/](https://developers.livechatinc.com/blog/testing-angular-2-apps-routeroutlet-and-http/)
 * [https://angular.io/docs/ts/latest/guide/server-communication.html](https://angular.io/docs/ts/latest/guide/server-communication.html)
+
+This project was generated with [angular-cli][angular-cli]
+version 1.0.0-beta.15.
 
 ## License
 
