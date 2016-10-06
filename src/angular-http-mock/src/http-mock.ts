@@ -2,7 +2,7 @@
  * Created by Evgeniy Generalov on 9/30/2016.
  */
 import {Injectable} from '@angular/core';
-import {ResponseOptions, Response} from '@angular/http';
+import {ResponseOptions, Response, Request} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 
 import {HttpMockError} from './http-mock-error';
@@ -38,13 +38,21 @@ export class HttpMock {
   }
 
   onConnection(connection: MockConnection) {
-    const options: ResponseOptions = (<RequestAssertion>this.assertions[0]).responseOptions;
-    options.url = connection.request.url;
-    const response = new Response(options);
-    if (options.status < 400) {
-      connection.mockRespond(response);
+    const options: ResponseOptions = this._findOptions(connection.request);
+    if (!options) {
     } else {
-      connection.mockError(new HttpMockError(response.text(), connection, response));
+      options.url = connection.request.url;
+      const response = new Response(options);
+      if (options.status < 400) {
+        connection.mockRespond(response);
+      } else {
+        connection.mockError(new HttpMockError(response.text(), connection, response));
+      }
     }
+  }
+
+  private _findOptions(request: Request) {
+    const assertionOrUndefined = this.assertions.find((value: Assertion) => value.test(request));
+    return assertionOrUndefined ? (<RequestAssertion>assertionOrUndefined).responseOptions : undefined;
   }
 }

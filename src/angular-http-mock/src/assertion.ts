@@ -8,7 +8,9 @@ export type RequestMethod =
   'GET' | 'POST' | 'PUT' | 'DELETE';
 
 
-export type MatchRule = {method?: RequestMethod, url?: string | RegExp};
+export type MatchRule = {
+  method?: RequestMethod,
+  url?: string | RegExp};
 
 
 export interface Assertion {
@@ -20,22 +22,22 @@ export class RequestAssertion implements Assertion {
   }
 
   test(httpRequest: Request) {
-    const allValidators = [
+    const allValidators: [[any, Function]] = [
       [this.rule.method, this._testRequestMethod],
       [this.rule.url, this._testRequestUrl]
     ];
-    const validators = allValidators.filter((value) => typeof value[0] !== 'undefined');
-    return !!validators.length && validators.every((value) => value[1].call(this, httpRequest));
+    const validators = allValidators.filter(value => typeof value[0] !== 'undefined');
+    return !!validators.length && validators.every(value => value[1].call(this, httpRequest));
   };
 
-  private _testRequestMethod(httpRequest: Request) {
+  private _testRequestMethod(httpRequest: Request): boolean {
     return normalizeMethodName(this.rule.method) === httpRequest.method;
   }
 
-  private _testRequestUrl(httpRequest: Request) {
+  private _testRequestUrl(httpRequest: Request): boolean {
     if (this.rule.url instanceof RegExp) {
       let urlRe = <RegExp>this.rule.url;
-      return urlRe.test(httpRequest.url);
+      return !!urlRe.test(httpRequest.url);
     } else {
       return this.rule.url === httpRequest.url;
     }

@@ -43,7 +43,7 @@ describe('RequestAssertion', () => {
       expect(ra.test(request)).toEqual(false);
     });
     it('should be false then expected method is undefined', () => {
-      const ra = new RequestAssertion({status: 200}, new ResponseOptions({status: 200}));
+      const ra = new RequestAssertion({}, new ResponseOptions({status: 200}));
       const request = new Request({method: 'POST', url: 'any'});
       expect(ra.test(request)).toEqual(false);
     });
@@ -59,7 +59,7 @@ describe('RequestAssertion', () => {
       expect(ra.test(request)).toEqual(false);
     });
     it('should be false then expected url is undefined', () => {
-      const ra = new RequestAssertion({status: 200}, new ResponseOptions({status: 200}));
+      const ra = new RequestAssertion({}, new ResponseOptions({status: 200}));
       const request = new Request({url: 'http://youserver/'});
       expect(ra.test(request)).toEqual(false);
     });

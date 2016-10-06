@@ -64,4 +64,32 @@ describe('HttpMockModule', () => {
     expect(errorFn).toHaveBeenCalled();
   }));
 
+  it('should mock multiple responses', inject([HttpMock, Http], (mock: HttpMock, http: Http) => {
+    const nextFn = jasmine.createSpy('next');
+    const errorFn = jasmine.createSpy('error');
+    mock.match({url: 'http://testserver/404/'}).andRespond(new ResponseOptions({
+      status: 404,
+      body: 'not found'
+    }));
+    mock.match({url: 'http://testserver/api/'}).andRespond(new ResponseOptions({
+      status: 200,
+      body: 'ok'
+    }));
+
+    http.get('http://testserver/404/').subscribe(
+      nextFn,
+      errorFn.and.callFake((error: HttpMockError) => {
+        expect(error.status).toEqual(404);
+      })
+    );
+    http.get('http://testserver/200/').subscribe(
+      nextFn.and.callFake((response: Response) => {
+        expect(response.status).toEqual(200);
+      }),
+      errorFn
+    );
+
+    expect(nextFn).not.toHaveBeenCalled();
+    expect(errorFn).toHaveBeenCalled();
+  }));
 });
