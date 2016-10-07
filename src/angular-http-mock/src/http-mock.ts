@@ -9,10 +9,13 @@ import {HttpMockError} from './http-mock-error';
 import {MatchRule, RequestAssertion, Assertion} from './assertion';
 
 
+export type AssertionStore = Array<Assertion>;
+export type ResponseStore = Array<Response>;
+
 @Injectable()
 export class HttpMock {
-  public assertions: Array<Assertion>;
-  public responses: Array<Response>;
+  public assertions: AssertionStore;
+  public responses: ResponseStore;
   private _currentRule: MatchRule;
 
   constructor(private _backend: MockBackend) {

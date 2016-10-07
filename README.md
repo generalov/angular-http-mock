@@ -16,7 +16,7 @@ import {AngularHttpMock} from 'angular-http-mock';
 describe('Basic usage', () => {
   beforeEach(() => TestBed.configureTestingModule({
       imports: [HttpModule, HttpMockModule]
- }));
+  }));
 
   afterEach(inject([MockBackend], (backend: MockBackend) =>
       backend.verifyNoPendingRequests()
