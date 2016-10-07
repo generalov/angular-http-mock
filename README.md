@@ -8,25 +8,49 @@
 
 A utility library for mocking out the requests in Angular2 Http module.
 
-## Basic Usage
+## Installation
+
+```sh
+npm install --save-dev @generalov/angular-http-mock
+```
+
+## Usage
+
+### Setup test
 
 ```TypeScript
-import {AngularHttpMock} from 'angular-http-mock';
+import {Response, HttpModule, Http} from '@angular/http';
+import {inject, TestBed} from '@angular/core/testing';
+import {MockBackend} from '@angular/http/testing';
+
+import {HttpMockModule, HttpMock} from '@generalov/angular-http-mock';
+
 
 describe('Basic usage', () => {
-  beforeEach(() => TestBed.configureTestingModule({
+  let nextFn: jasmine.Spy,
+      errorFn: jasmine.Spy;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [HttpModule, HttpMockModule]
+    });
+    nextFn = jasmine.createSpy('next');
+    errorFn = jasmine.createSpy('error');
+  });
+
+  afterEach(inject([MockBackend], (backend: MockBackend) => {
+    backend.verifyNoPendingRequests();
   }));
 
-  afterEach(inject([MockBackend], (backend: MockBackend) =>
-      backend.verifyNoPendingRequests()
-  ));
+  // put your scenarios here
+});
+```
 
+### Test Http request
+
+```TypeScript
   it('should mock response',
     inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
-      const nextFn = jasmine.createSpy('next');
-      const errorFn = jasmine.createSpy('error');
-
       mock.match({url: /api/}).andRespond({
         status: 200,
         body: 'ok'
@@ -34,14 +58,49 @@ describe('Basic usage', () => {
 
       http.get('http://testserver/api/').subscribe(nextFn, errorFn);
 
-      expect(nextFn).toHaveBeenCalled();
       expect(errorFn).not.toHaveBeenCalled();
+      expect(nextFn).toHaveBeenCalled();
       expect(mock.responses[0].status).toBe(200);
       expect(mock.responses[0].url).toBe('http://testserver/api/');
       expect(mock.responses[0].text()).toBe('ok');
     })
   );
-});
+```
+
+### Test data provider
+
+```TypeScript
+  let wsSpec = {
+    api: {
+      request: {method: 'GET', url: 'http://testserver/api/'},
+      success: {
+        status: 200,
+        body: '{"message": "ok"}'
+      }
+    }
+  };
+
+  let dataProvider = (http) =>
+    return http.get('http://testserver/api/')
+      .map((res: Response) => res.json())
+      .map((data: {message: string}) => data.message)
+      .share();
+
+  it(`should be usable in the typical data provider's test`,
+    inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
+      mock.match(wsSpec.api.request).andRespond(wsSpec.api.success);
+
+      dataProvider(http).subscribe(
+        nextFn.and.callFake((value: string) => {
+          expect(value).toBe('ok');
+        }),
+        errorFn
+      );
+
+      expect(errorFn).not.toHaveBeenCalled();
+      expect(nextFn).toHaveBeenCalled();
+    })
+  );
 ```
 
 ## Build

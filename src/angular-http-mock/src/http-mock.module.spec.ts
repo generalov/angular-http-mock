@@ -39,8 +39,8 @@ describe('HttpMockModule', () => {
       errorFn
     );
 
-    expect(nextFn).toHaveBeenCalled();
     expect(errorFn).not.toHaveBeenCalled();
+    expect(nextFn).toHaveBeenCalled();
   }));
 
   it('should mock error response', inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
@@ -97,8 +97,8 @@ describe('HttpMockModule', () => {
 
     http.get('http://testserver/api/').subscribe(nextFn, errorFn);
 
-    expect(nextFn).toHaveBeenCalled();
     expect(errorFn).not.toHaveBeenCalled();
+    expect(nextFn).toHaveBeenCalled();
     expect(mock.responses.length).toBe(1);
     expect(mock.responses[0].url).toBe('http://testserver/api/');
     expect(mock.responses[0].text()).toBe('ok');
@@ -129,11 +129,35 @@ describe('HttpMockModule', () => {
     http.get('http://testserver/api/').subscribe(nextFn, errorFn);
     http.get('http://testserver/api/').subscribe(nextFn, errorFn);
 
-    expect(nextFn).toHaveBeenCalledTimes(2);
     expect(errorFn).not.toHaveBeenCalled();
+    expect(nextFn).toHaveBeenCalledTimes(2);
     expect(mock.responses.length).toBe(2);
     expect(mock.responses[0].url).toBe('http://testserver/api/');
     expect(mock.responses[1].url).toBe('http://testserver/api/');
   }));
 
+  it(`should be usable in the typical data provider's test`,
+    inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
+      let dataProvider = () =>
+        http.get('http://testserver/api/')
+          .map((res: Response) => res.json())
+          .map((data: {message: string}) => data.message)
+          .share();
+
+      mock.match({url: 'http://testserver/api/'}).andRespond({
+        status: 200,
+        body: '{"message": "ok"}'
+      });
+
+      dataProvider().subscribe(
+        nextFn.and.callFake((value: string) => {
+          expect(value).toBe('ok');
+        }),
+        errorFn
+      );
+
+      expect(errorFn).not.toHaveBeenCalled();
+      expect(nextFn).toHaveBeenCalled();
+    })
+  );
 });
