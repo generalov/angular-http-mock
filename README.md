@@ -14,37 +14,31 @@ A utility library for mocking out the requests in Angular2 Http module.
 import {AngularHttpMock} from 'angular-http-mock';
 
 describe('Basic usage', () => {
-
   beforeEach(() => TestBed.configureTestingModule({
       imports: [HttpModule, HttpMockModule]
-  })});
+ }));
 
   afterEach(inject([MockBackend], (backend: MockBackend) =>
       backend.verifyNoPendingRequests()
   ));
 
   it('should mock response',
-    inject([HttpMock, Http], (mock: HttpMock, http: Http) => {
+    inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
       const nextFn = jasmine.createSpy('next');
       const errorFn = jasmine.createSpy('error');
-      const options = {
+
+      mock.match({url: /api/}).andRespond({
         status: 200,
         body: 'ok'
-      };
-      mock.match({url: 'http://testserver/api/'})
-          .andRespond(new ResponseOptions(options));
+      });
 
-      http.get('http://testserver/api/').subscribe(
-        nextFn.and.callFake((response: Response) => {
-          expect(response.status).toEqual(200);
-          expect(response.url).toEqual('http://testserver/api/');
-          expect(response.text()).toEqual('ok');
-        }),
-        errorFn
-      );
+      http.get('http://testserver/api/').subscribe(nextFn, errorFn);
 
       expect(nextFn).toHaveBeenCalled();
       expect(errorFn).not.toHaveBeenCalled();
+      expect(mock.responses[0].status).toEqual(200);
+      expect(mock.responses[0].url).toEqual('http://testserver/api/');
+      expect(mock.responses[0].text()).toEqual('ok');
     })
   );
 });

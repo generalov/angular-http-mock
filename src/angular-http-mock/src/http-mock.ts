@@ -2,7 +2,7 @@
  * Created by Evgeniy Generalov on 9/30/2016.
  */
 import {Injectable} from '@angular/core';
-import {ResponseOptions, Response, Request} from '@angular/http';
+import {ResponseOptions, Response, ResponseOptionsArgs, Request} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 
 import {HttpMockError} from './http-mock-error';
@@ -12,7 +12,7 @@ import {MatchRule, RequestAssertion, Assertion} from './assertion';
 @Injectable()
 export class HttpMock {
   public assertions: Array<Assertion>;
-  public responses: Array<Assertion>;
+  public responses: Array<Response>;
   private _currentRule: MatchRule;
 
   constructor(private _backend: MockBackend) {
@@ -30,11 +30,11 @@ export class HttpMock {
     return this;
   }
 
-  andRespond(options: ResponseOptions) {
+  andRespond(options: ResponseOptionsArgs) {
     if (!this._currentRule) {
       throw new Error('Logic error');
     }
-    this.assertions.push(new RequestAssertion(this._currentRule, options));
+    this.assertions.push(new RequestAssertion(this._currentRule, new ResponseOptions(options)));
     this._currentRule = null;
     return this;
   }
@@ -46,6 +46,7 @@ export class HttpMock {
     } else {
       options.url = connection.request.url;
       const response = new Response(options);
+      this.responses.push(response);
       if (options.status < 400) {
         connection.mockRespond(response);
       } else {
