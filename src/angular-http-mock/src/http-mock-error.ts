@@ -15,7 +15,7 @@ export class HttpMockError extends Error {
   constructor(message: string, xhr: MockConnection, response: Response) {
     super(message);
     this.message = message;
-    this.xhr = xhr;
     this.status = response.status;
+    this.xhr = xhr;
   }
 }

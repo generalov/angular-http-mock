@@ -12,10 +12,12 @@ import {MatchRule, RequestAssertion, Assertion} from './assertion';
 @Injectable()
 export class HttpMock {
   public assertions: Array<Assertion>;
+  public responses: Array<Assertion>;
   private _currentRule: MatchRule;
 
   constructor(private _backend: MockBackend) {
     this.assertions = [];
+    this.responses = [];
     this._currentRule = null;
     _backend.connections.subscribe((connection: MockConnection) => this.onConnection(connection));
   }
@@ -37,8 +39,9 @@ export class HttpMock {
     return this;
   }
 
-  onConnection(connection: MockConnection) {
+  onConnection(connection: MockConnection): void {
     const options: ResponseOptions = this._findOptions(connection.request);
+
     if (!options) {
     } else {
       options.url = connection.request.url;

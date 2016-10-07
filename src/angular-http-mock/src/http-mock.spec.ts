@@ -33,6 +33,12 @@ describe('HttpMock', () => {
     }));
   });
 
+  describe('responses', () => {
+    it('should be defined', inject([HttpMock], (httpMock: HttpMock) => {
+      expect(httpMock.responses).toBeDefined();
+    }));
+  });
+
   describe('match()', () => {
     it('should be defined', inject([HttpMock], (httpMock: HttpMock) => {
       expect(httpMock.match).toBeDefined();
