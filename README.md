@@ -36,9 +36,9 @@ describe('Basic usage', () => {
 
       expect(nextFn).toHaveBeenCalled();
       expect(errorFn).not.toHaveBeenCalled();
-      expect(mock.responses[0].status).toEqual(200);
-      expect(mock.responses[0].url).toEqual('http://testserver/api/');
-      expect(mock.responses[0].text()).toEqual('ok');
+      expect(mock.responses[0].status).toBe(200);
+      expect(mock.responses[0].url).toBe('http://testserver/api/');
+      expect(mock.responses[0].text()).toBe('ok');
     })
   );
 });

@@ -35,39 +35,39 @@ describe('RequestAssertion', () => {
     it('should be true then request method is same as expected', () => {
       const ra = new RequestAssertion({method: 'GET'}, new ResponseOptions({status: 200}));
       const request = new Request({method: 'GET', url: 'any'});
-      expect(ra.test(request)).toEqual(true);
+      expect(ra.test(request)).toBe(true);
     });
     it('should be false then request method is different', () => {
       const ra = new RequestAssertion({method: 'GET'}, new ResponseOptions({status: 200}));
       const request = new Request({method: 'POST', url: 'any'});
-      expect(ra.test(request)).toEqual(false);
+      expect(ra.test(request)).toBe(false);
     });
     it('should be false then expected method is undefined', () => {
       const ra = new RequestAssertion({}, new ResponseOptions({status: 200}));
       const request = new Request({method: 'POST', url: 'any'});
-      expect(ra.test(request)).toEqual(false);
+      expect(ra.test(request)).toBe(false);
     });
 
     it('should be true then request url is the same as expected', () => {
       const ra = new RequestAssertion({url: 'http://myserver/'}, new ResponseOptions({status: 200}));
       const request = new Request({url: 'http://myserver/'});
-      expect(ra.test(request)).toEqual(true);
+      expect(ra.test(request)).toBe(true);
     });
     it('should be true then request url is different', () => {
       const ra = new RequestAssertion({url: 'http://myserver/'}, new ResponseOptions({status: 200}));
       const request = new Request({url: 'http://youserver/'});
-      expect(ra.test(request)).toEqual(false);
+      expect(ra.test(request)).toBe(false);
     });
     it('should be false then expected url is undefined', () => {
       const ra = new RequestAssertion({}, new ResponseOptions({status: 200}));
       const request = new Request({url: 'http://youserver/'});
-      expect(ra.test(request)).toEqual(false);
+      expect(ra.test(request)).toBe(false);
     });
 
     it('should be true then request url match regexp', () => {
       const ra = new RequestAssertion({url: /myserver/}, new ResponseOptions({status: 200}));
       const request = new Request({url: 'http://myserver/'});
-      expect(ra.test(request)).toEqual(true);
+      expect(ra.test(request)).toBe(true);
     });
 
   });

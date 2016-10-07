@@ -49,7 +49,7 @@ describe('HttpMock', () => {
     }));
 
     it('should be fluent', inject([HttpMock], (httpMock: HttpMock) => {
-      expect(httpMock.match(({method: 'GET'}))).toEqual(httpMock);
+      expect(httpMock.match(({method: 'GET'}))).toBe(httpMock);
     }));
 
     it(`should throw Error if previous rule incomplete`, inject([HttpMock], (httpMock: HttpMock) => {
@@ -69,15 +69,15 @@ describe('HttpMock', () => {
     }));
 
     it('should append rule', inject([HttpMock], (httpMock: HttpMock) => {
-      expect(httpMock.assertions.length).toEqual(0);
+      expect(httpMock.assertions.length).toBe(0);
       const responseOptions: ResponseOptions = new ResponseOptions({status: 200});
       httpMock.match({method: 'GET'}).andRespond(responseOptions);
-      expect(httpMock.assertions.length).toEqual(1);
+      expect(httpMock.assertions.length).toBe(1);
     }));
 
     it('should be fluent', inject([HttpMock], (httpMock: HttpMock) => {
       httpMock.match({method: 'GET'});
-      expect(httpMock.andRespond(new ResponseOptions({status: 200}))).toEqual(httpMock);
+      expect(httpMock.andRespond(new ResponseOptions({status: 200}))).toBe(httpMock);
     }));
   });
 

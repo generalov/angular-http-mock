@@ -8,7 +8,7 @@ import {HttpMockError} from './http-mock-error';
 
 
 describe('HttpMockModule', () => {
-  let nextFn, errorFn;
+  let nextFn: jasmine.Spy, errorFn: jasmine.Spy;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -32,9 +32,9 @@ describe('HttpMockModule', () => {
 
     http.get('http://testserver/api/').subscribe(
       nextFn.and.callFake((response: Response) => {
-        expect(response.status).toEqual(200);
-        expect(response.url).toEqual('http://testserver/api/');
-        expect(response.text()).toEqual('ok');
+        expect(response.status).toBe(200);
+        expect(response.url).toBe('http://testserver/api/');
+        expect(response.text()).toBe('ok');
       }),
       errorFn
     );
@@ -52,8 +52,8 @@ describe('HttpMockModule', () => {
     http.get('http://testserver/api/').subscribe(
       nextFn,
       errorFn.and.callFake((error: HttpMockError) => {
-        expect(error.status).toEqual(400);
-        expect(error.message).toEqual('Bad request');
+        expect(error.status).toBe(400);
+        expect(error.message).toBe('Bad request');
       })
     );
 
@@ -74,12 +74,12 @@ describe('HttpMockModule', () => {
     http.get('http://testserver/404/').subscribe(
       nextFn,
       errorFn.and.callFake((error: HttpMockError) => {
-        expect(error.status).toEqual(404);
+        expect(error.status).toBe(404);
       })
     );
     http.get('http://testserver/200/').subscribe(
       nextFn.and.callFake((response: Response) => {
-        expect(response.status).toEqual(200);
+        expect(response.status).toBe(200);
       }),
       errorFn
     );
@@ -93,15 +93,15 @@ describe('HttpMockModule', () => {
       status: 200,
       body: 'ok'
     });
-    expect(mock.responses.length).toEqual(0);
+    expect(mock.responses.length).toBe(0);
 
     http.get('http://testserver/api/').subscribe(nextFn, errorFn);
 
     expect(nextFn).toHaveBeenCalled();
     expect(errorFn).not.toHaveBeenCalled();
-    expect(mock.responses.length).toEqual(1);
-    expect(mock.responses[0].url).toEqual('http://testserver/api/');
-    expect(mock.responses[0].text()).toEqual('ok');
+    expect(mock.responses.length).toBe(1);
+    expect(mock.responses[0].url).toBe('http://testserver/api/');
+    expect(mock.responses[0].text()).toBe('ok');
   }));
 
   it('should record error response', inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
@@ -109,15 +109,15 @@ describe('HttpMockModule', () => {
       status: 404,
       body: 'not found'
     });
-    expect(mock.responses.length).toEqual(0);
+    expect(mock.responses.length).toBe(0);
 
     http.get('http://testserver/api/').subscribe(nextFn, errorFn);
 
     expect(nextFn).not.toHaveBeenCalled();
     expect(errorFn).toHaveBeenCalled();
-    expect(mock.responses.length).toEqual(1);
-    expect(mock.responses[0].url).toEqual('http://testserver/api/');
-    expect(mock.responses[0].text()).toEqual('not found');
+    expect(mock.responses.length).toBe(1);
+    expect(mock.responses[0].url).toBe('http://testserver/api/');
+    expect(mock.responses[0].text()).toBe('not found');
   }));
 
   it('should record several responses', inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
@@ -131,9 +131,9 @@ describe('HttpMockModule', () => {
 
     expect(nextFn).toHaveBeenCalledTimes(2);
     expect(errorFn).not.toHaveBeenCalled();
-    expect(mock.responses.length).toEqual(2);
-    expect(mock.responses[0].url).toEqual('http://testserver/api/');
-    expect(mock.responses[1].url).toEqual('http://testserver/api/');
+    expect(mock.responses.length).toBe(2);
+    expect(mock.responses[0].url).toBe('http://testserver/api/');
+    expect(mock.responses[1].url).toBe('http://testserver/api/');
   }));
 
 });
