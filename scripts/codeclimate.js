@@ -1,5 +1,4 @@
 /*eslint-env node*/
-/*eslint-disable no-console */
 
 const spawn = require('child_process').spawn;
 const CODECLIMATE_CODE = require('path').dirname(__dirname);
