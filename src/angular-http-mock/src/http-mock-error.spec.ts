@@ -17,8 +17,8 @@ describe('HttpMockError', () => {
       null,
       new Response(new ResponseOptions({status: 400}))
     );
-    expect(error.message).toEqual('error message');
-    expect(error.xhr).toEqual(null);
-    expect(error.status).toEqual(400);
+    expect(error.message).toBe('error message');
+    expect(error.xhr).toBe(null);
+    expect(error.status).toBe(400);
   });
 });
