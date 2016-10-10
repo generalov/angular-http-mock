@@ -16,7 +16,7 @@ npm install --save-dev @generalov/angular-http-mock
 
 ## Usage
 
-### Setup test
+### Setup a test suite
 
 ```TypeScript
 import {Response, HttpModule, Http} from '@angular/http';
@@ -26,9 +26,8 @@ import {MockBackend} from '@angular/http/testing';
 import {HttpMockModule, HttpMock} from '@generalov/angular-http-mock';
 
 
-describe('Basic usage', () => {
-  let nextFn: jasmine.Spy,
-      errorFn: jasmine.Spy;
+describe('HttpMock usage', () => {
+  let nextFn: jasmine.Spy, errorFn: jasmine.Spy;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -42,16 +41,16 @@ describe('Basic usage', () => {
     backend.verifyNoPendingRequests();
   }));
 
-  // put your scenarios here
+  // Put your specs here
 });
 ```
 
-### Test Http request
+### Mock Http request
 
 ```TypeScript
   it('should mock response',
-    inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
-      mock.match({url: /api/}).andRespond({
+    inject([Http, HttpMock], (http: Http, httpMock: HttpMock) => {
+      httpMock.match({url: /api/}).andRespond({
         status: 200,
         body: 'ok'
       });
@@ -60,14 +59,22 @@ describe('Basic usage', () => {
 
       expect(errorFn).not.toHaveBeenCalled();
       expect(nextFn).toHaveBeenCalled();
-      expect(mock.responses[0].status).toBe(200);
-      expect(mock.responses[0].url).toBe('http://testserver/api/');
-      expect(mock.responses[0].text()).toBe('ok');
+      expect(httpMock.responses[0].status).toBe(200);
+      expect(httpMock.responses[0].url).toBe('http://testserver/api/');
+      expect(httpMock.responses[0].text()).toBe('ok');
     })
   );
 ```
 
-### Test data provider
+### Mock Http request in data provider's test
+
+```TypeScript
+  let dataProvider = (http) =>
+    return http.get('http://testserver/api/')
+      .map((res: Response) => res.json())
+      .map((data: {message: string}) => data.message)
+      .catch((error: any): string => Observable.throw('Server error'));
+```
 
 ```TypeScript
   let wsSpec = {
@@ -76,25 +83,42 @@ describe('Basic usage', () => {
       success: {
         status: 200,
         body: '{"message": "ok"}'
+      },
+      serverError: {
+        status: 502,
+        body: 'Bad gateway'
       }
     }
   };
+```
 
-  let dataProvider = (http) =>
-    return http.get('http://testserver/api/')
-      .map((res: Response) => res.json())
-      .map((data: {message: string}) => data.message)
-      .share();
-
-  it(`should be usable in the typical data provider's test`,
-    inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
-      mock.match(wsSpec.api.request).andRespond(wsSpec.api.success);
+```TypeScript
+  it(`should be usable in the success test`,
+    inject([Http, HttpMock], (http: Http, httpMock: HttpMock) => {
+      httpMock
+        .match(wsSpec.api.request)
+        .andRespond(wsSpec.api.success);
 
       dataProvider(http).subscribe(nextFn, errorFn);
 
       expect(errorFn).not.toHaveBeenCalled();
       expect(nextFn).toHaveBeenCalled();
       expect(nextFn.calls.mostRecent().args[0]).toBe('ok');
+    })
+  );
+
+  it(`should be usable in the typical error test`,
+    inject([Http, HttpMock], (http: Http, httpMock: HttpMock) => {
+      httpMock
+        .match(wsSpec.api.request)
+        .andRespond(wsSpec.api.serverError);
+
+      dataProvider(http).subscribe(nextFn, errorFn);
+
+      expect(nextFn).not.toHaveBeenCalled();
+      expect(errorFn).toHaveBeenCalled();
+      expect(httpMock.responses[0].status).toBe(502);
+      expect(errorFn.calls.mostRecent().args[0]).toBe('Server error');
     })
   );
 ```
