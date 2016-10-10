@@ -5,6 +5,7 @@ import {MockBackend} from '@angular/http/testing';
 import {HttpMock} from '../src/http-mock';
 import {HttpMockModule} from '../src/http-mock.module';
 import {HttpMockError} from '../src/http-mock-error';
+import {Observable} from 'rxjs';
 
 
 describe('HttpMockModule', () => {
@@ -23,14 +24,14 @@ describe('HttpMockModule', () => {
   ));
 
   it('should be instantiated', inject([HttpMock],
-    (mock: HttpMock) => {
-      expect(mock).toBeDefined();
+    (httpMock: HttpMock) => {
+      expect(httpMock).toBeDefined();
     })
   );
 
   it('should mock response', inject([Http, HttpMock],
-    (http: Http, mock: HttpMock) => {
-      mock.match({url: 'http://testserver/api/'}).andRespond({
+    (http: Http, httpMock: HttpMock) => {
+      httpMock.match({url: 'http://testserver/api/'}).andRespond({
         status: 200,
         body: 'ok'
       });
@@ -47,8 +48,8 @@ describe('HttpMockModule', () => {
   );
 
   it('should mock error response', inject([Http, HttpMock],
-    (http: Http, mock: HttpMock) => {
-      mock.match({url: 'http://testserver/api/'}).andRespond({
+    (http: Http, httpMock: HttpMock) => {
+      httpMock.match({url: 'http://testserver/api/'}).andRespond({
         status: 400,
         body: 'Bad request'
       });
@@ -64,12 +65,12 @@ describe('HttpMockModule', () => {
   );
 
   it('should mock multiple responses', inject([Http, HttpMock],
-    (http: Http, mock: HttpMock) => {
-      mock.match({url: 'http://testserver/404/'}).andRespond({
+    (http: Http, httpMock: HttpMock) => {
+      httpMock.match({url: 'http://testserver/404/'}).andRespond({
         status: 404,
         body: 'not found'
       });
-      mock.match({url: 'http://testserver/api/'}).andRespond({
+      httpMock.match({url: 'http://testserver/api/'}).andRespond({
         status: 200,
         body: 'ok'
       });
@@ -85,44 +86,44 @@ describe('HttpMockModule', () => {
   );
 
   it('should record success response', inject([Http, HttpMock],
-    (http: Http, mock: HttpMock) => {
-      mock.match({url: 'http://testserver/api/'}).andRespond({
+    (http: Http, httpMock: HttpMock) => {
+      httpMock.match({url: 'http://testserver/api/'}).andRespond({
         status: 200,
         body: 'ok'
       });
-      expect(mock.responses.length).toBe(0);
+      expect(httpMock.responses.length).toBe(0);
 
       http.get('http://testserver/api/').subscribe(nextFn, errorFn);
 
       expect(errorFn).not.toHaveBeenCalled();
       expect(nextFn).toHaveBeenCalled();
-      expect(mock.responses.length).toBe(1);
-      expect(mock.responses[0].url).toBe('http://testserver/api/');
-      expect(mock.responses[0].text()).toBe('ok');
+      expect(httpMock.responses.length).toBe(1);
+      expect(httpMock.responses[0].url).toBe('http://testserver/api/');
+      expect(httpMock.responses[0].text()).toBe('ok');
     })
   );
 
   it('should record error response', inject([Http, HttpMock],
-    (http: Http, mock: HttpMock) => {
-      mock.match({url: 'http://testserver/api/'}).andRespond({
+    (http: Http, httpMock: HttpMock) => {
+      httpMock.match({url: 'http://testserver/api/'}).andRespond({
         status: 404,
         body: 'not found'
       });
-      expect(mock.responses.length).toBe(0);
+      expect(httpMock.responses.length).toBe(0);
 
       http.get('http://testserver/api/').subscribe(nextFn, errorFn);
 
       expect(nextFn).not.toHaveBeenCalled();
       expect(errorFn).toHaveBeenCalled();
-      expect(mock.responses.length).toBe(1);
-      expect(mock.responses[0].url).toBe('http://testserver/api/');
-      expect(mock.responses[0].text()).toBe('not found');
+      expect(httpMock.responses.length).toBe(1);
+      expect(httpMock.responses[0].url).toBe('http://testserver/api/');
+      expect(httpMock.responses[0].text()).toBe('not found');
     })
   );
 
   it('should record several responses', inject([Http, HttpMock],
-    (http: Http, mock: HttpMock) => {
-      mock.match({url: 'http://testserver/api/'}).andRespond({
+    (http: Http, httpMock: HttpMock) => {
+      httpMock.match({url: 'http://testserver/api/'}).andRespond({
         status: 200,
         body: 'ok'
       });
@@ -132,31 +133,53 @@ describe('HttpMockModule', () => {
 
       expect(errorFn).not.toHaveBeenCalled();
       expect(nextFn).toHaveBeenCalledTimes(2);
-      expect(mock.responses.length).toBe(2);
-      expect(mock.responses[0].url).toBe('http://testserver/api/');
-      expect(mock.responses[1].url).toBe('http://testserver/api/');
+      expect(httpMock.responses.length).toBe(2);
+      expect(httpMock.responses[0].url).toBe('http://testserver/api/');
+      expect(httpMock.responses[1].url).toBe('http://testserver/api/');
     })
   );
 
-  it(`should be usable in the typical data provider's test`, inject([Http, HttpMock],
-    (http: Http, mock: HttpMock) => {
-      let wsSpec = {
-        request: {method: 'GET', url: 'http://testserver/api/'},
-        success: {status: 200, body: '{"message": "ok"}'}
-      };
-      let dataProvider = () =>
-        http.get('http://testserver/api/')
-          .map((res: Response) => res.json())
-          .map((data: {message: string}) => data.message)
-          .share();
+  describe('sample data provider test', () => {
+    let dataProvider = (http: Http): Observable<string> =>
+      http.get('http://testserver/api/')
+        .map((res: Response) => res.json())
+        .map((data: {message: string}) => data.message)
+        .catch((error: any) => Observable.throw('Server error'));
 
-      mock.match(wsSpec.request).andRespond(wsSpec.success);
+    let wsSpec = {
+      request: {method: 'GET', url: 'http://testserver/api/'},
+      success: {status: 200, body: '{"message": "ok"}'},
+      serverError: {status: 502, body: 'Bad gateway'}
+    };
 
-      dataProvider().subscribe(nextFn, errorFn);
+    it(`should be usable in success tests`, inject([Http, HttpMock],
+      (http: Http, httpMock: HttpMock) => {
+        httpMock
+          .match(wsSpec.request)
+          .andRespond(wsSpec.success);
 
-      expect(errorFn).not.toHaveBeenCalled();
-      expect(nextFn).toHaveBeenCalled();
-      expect(nextFn.calls.mostRecent().args[0]).toBe('ok');
-    })
-  );
+        dataProvider(http).subscribe(nextFn, errorFn);
+
+        expect(errorFn).not.toHaveBeenCalled();
+        expect(nextFn).toHaveBeenCalled();
+        expect(httpMock.responses[0].status).toBe(200);
+        expect(nextFn.calls.mostRecent().args[0]).toBe('ok');
+      })
+    );
+
+    it(`should be usable in error tests`, inject([Http, HttpMock],
+      (http: Http, httpMock: HttpMock) => {
+        httpMock
+          .match(wsSpec.request)
+          .andRespond(wsSpec.serverError);
+
+        dataProvider(http).subscribe(nextFn, errorFn);
+
+        expect(errorFn).toHaveBeenCalled();
+        expect(nextFn).not.toHaveBeenCalled();
+        expect(httpMock.responses[0].status).toBe(502);
+        expect(errorFn.calls.mostRecent().args[0]).toBe('Server error');
+      })
+    );
+  });
 });
