@@ -2,9 +2,9 @@ import {Response, HttpModule, Http} from '@angular/http';
 import {inject, TestBed} from '@angular/core/testing';
 import {MockBackend} from '@angular/http/testing';
 
-import {HttpMock} from './http-mock';
-import {HttpMockModule} from './http-mock.module';
-import {HttpMockError} from './http-mock-error';
+import {HttpMock} from '../src/http-mock';
+import {HttpMockModule} from '../src/http-mock.module';
+import {HttpMockError} from '../src/http-mock-error';
 
 
 describe('HttpMockModule', () => {

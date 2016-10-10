@@ -3,7 +3,7 @@
  */
 import {ResponseOptions, Request} from '@angular/http';
 
-import {RequestAssertion, MatchRule} from './assertion';
+import {RequestAssertion, MatchRule} from '../src/assertion';
 
 
 describe('RequestAssertion', () => {

@@ -1,6 +1,6 @@
 import {inject, TestBed} from '@angular/core/testing';
 
-import {HttpMock} from './http-mock';
+import {HttpMock} from '../src/http-mock';
 import {MockBackend} from '@angular/http/testing';
 import {Observable} from 'rxjs';
 
