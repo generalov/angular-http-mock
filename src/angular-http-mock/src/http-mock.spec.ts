@@ -3,7 +3,6 @@ import {inject, TestBed} from '@angular/core/testing';
 import {HttpMock} from './http-mock';
 import {MockBackend} from '@angular/http/testing';
 import {Observable} from 'rxjs';
-import {ResponseOptions} from '@angular/http';
 
 
 describe('HttpMock', () => {
@@ -65,19 +64,18 @@ describe('HttpMock', () => {
     }));
 
     it(`should throw Error if no rules`, inject([HttpMock], (httpMock: HttpMock) => {
-      expect(() => httpMock.andRespond(new ResponseOptions({status: 200}))).toThrowError('Logic error');
+      expect(() => httpMock.andRespond({status: 200})).toThrowError('Logic error');
     }));
 
     it('should append rule', inject([HttpMock], (httpMock: HttpMock) => {
       expect(httpMock.assertions.length).toBe(0);
-      const responseOptions: ResponseOptions = new ResponseOptions({status: 200});
-      httpMock.match({method: 'GET'}).andRespond(responseOptions);
+      httpMock.match({method: 'GET'}).andRespond({status: 200});
       expect(httpMock.assertions.length).toBe(1);
     }));
 
     it('should be fluent', inject([HttpMock], (httpMock: HttpMock) => {
       httpMock.match({method: 'GET'});
-      expect(httpMock.andRespond(new ResponseOptions({status: 200}))).toBe(httpMock);
+      expect(httpMock.andRespond({status: 200})).toBe(httpMock);
     }));
   });
 

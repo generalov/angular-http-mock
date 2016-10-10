@@ -6,7 +6,7 @@ import {ResponseOptions, Response, ResponseOptionsArgs, Request} from '@angular/
 import {MockBackend, MockConnection} from '@angular/http/testing';
 
 import {HttpMockError} from './http-mock-error';
-import {MatchRule, RequestAssertion, Assertion} from './assertion';
+import {MatchRule, RequestAssertion, Assertion, MatchRuleArgs} from './assertion';
 
 
 export type AssertionStore = Array<Assertion>;
@@ -25,11 +25,11 @@ export class HttpMock {
     _backend.connections.subscribe((connection: MockConnection) => this.onConnection(connection));
   }
 
-  match(rule: MatchRule) {
+  match(rule: MatchRuleArgs = {}) {
     if (this._currentRule) {
       throw new Error('Logic error');
     }
-    this._currentRule = rule;
+    this._currentRule = new MatchRule(rule);
     return this;
   }
 

@@ -90,15 +90,11 @@ describe('Basic usage', () => {
     inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
       mock.match(wsSpec.api.request).andRespond(wsSpec.api.success);
 
-      dataProvider(http).subscribe(
-        nextFn.and.callFake((value: string) => {
-          expect(value).toBe('ok');
-        }),
-        errorFn
-      );
+      dataProvider(http).subscribe(nextFn, errorFn);
 
       expect(errorFn).not.toHaveBeenCalled();
       expect(nextFn).toHaveBeenCalled();
+      expect(nextFn.calls.mostRecent().args[0]).toBe('ok');
     })
   );
 ```

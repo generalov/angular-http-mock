@@ -2,36 +2,51 @@
  * Created by Evgeniy_Generalov on 10/4/2016.
  */
 
-import {ResponseOptions, Request} from '@angular/http';
+import {ResponseOptions, Request, RequestMethod} from '@angular/http';
 import {normalizeMethodName} from '@angular/http/src/http_utils';
-export type RequestMethod =
-  'GET' | 'POST' | 'PUT' | 'DELETE';
+import {isPresent} from '@angular/common/src/facade/lang';
 
 
-export type MatchRule = {
-  method?: RequestMethod,
-  url?: string | RegExp};
+export interface MatchRuleArgs {
+  method?: string|RequestMethod;
+  url?: string | RegExp;
+}
 
+export class MatchRule {
+  method: RequestMethod;
+  url: string | RegExp;
+
+  constructor({method, url}: MatchRuleArgs = {}) {
+    this.method = isPresent(method) ? normalizeMethodName(method) : null;
+    this.url = isPresent(url) ? url : null;
+  }
+}
 
 export interface Assertion {
   test: (httpRequest: Request) => boolean;
 }
 
 export class RequestAssertion implements Assertion {
-  constructor(public rule: MatchRule, public responseOptions: ResponseOptions) {
+  public rule: MatchRule;
+  public responseOptions: ResponseOptions;
+
+  constructor(rule: MatchRule, responseOptions: ResponseOptions) {
+    this.rule = rule;
+    this.responseOptions = responseOptions;
   }
 
   test(httpRequest: Request) {
-    const allValidators: [[any, Function]] = [
+    const allValidators: [[any, (httpRequest: Request) => boolean]] = [
       [this.rule.method, this._testRequestMethod],
       [this.rule.url, this._testRequestUrl]
     ];
-    const validators = allValidators.filter(value => typeof value[0] !== 'undefined');
+    const validators = allValidators.filter(value => isPresent(value[0]));
+
     return !!validators.length && validators.every(value => value[1].call(this, httpRequest));
   };
 
   private _testRequestMethod(httpRequest: Request): boolean {
-    return normalizeMethodName(this.rule.method) === httpRequest.method;
+    return this.rule.method === httpRequest.method;
   }
 
   private _testRequestUrl(httpRequest: Request): boolean {
