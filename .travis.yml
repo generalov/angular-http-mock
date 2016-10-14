@@ -18,9 +18,9 @@ addons:
 
 cache:
   directories:
-    - $HOME/.yarn-cache
-    - ./.chrome/chromium
-#     - ./node_modules
+    - $HOME/.chrome/chromium
+    - node_modules
+
 addons:
     code_climate: {}
 
@@ -28,12 +28,11 @@ before_install:
   - export CHROME_BIN=chromium-browser
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - npm install -g github:yarnpkg/yarn --cache-min Infinity --spin false --progress false
-  - yarn global add --ignore-optional karma
-  - yarn global add --ignore-optional codeclimate-test-reporter
+  - npm install --cache-min Infinity --spin false --progress false --no-optional -g npm
+  - npm install --cache-min Infinity --spin false --progress false --no-optional -g karma codeclimate-test-reporter
 
 install:
-  - yarn --ignore-optional
+  - npm install --cache-min Infinity --spin false --progress false --no-optional
 
 script: karma start karma.conf.js --single-run
 
