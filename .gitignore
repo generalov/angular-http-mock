@@ -7,6 +7,8 @@
 
 # dependencies
 /node_modules
+/node_cache
+/node_shrinkwrap
 /bower_components
 
 # IDEs and editors

@@ -18,8 +18,9 @@ addons:
 
 cache:
   directories:
-     - ./node_modules
-     - ./.chrome/chromium
+    - $HOME/.chrome/chromium
+    - node_modules
+
 addons:
     code_climate: {}
 
@@ -27,15 +28,11 @@ before_install:
   - export CHROME_BIN=chromium-browser
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - npm install -g npm
-  - npm config set spin false
-  - npm config set progress false
-  - npm config set cache-min 9999999
-  - npm install --no-optional -g karma
-  - npm install --no-optional -g codeclimate-test-reporter
+  - npm install --cache-min Infinity --spin false --progress false --no-optional -g npm
+  - npm install --cache-min Infinity --spin false --progress false --no-optional -g karma codeclimate-test-reporter
 
 install:
-  - npm install --no-optional
+  - npm install --cache-min Infinity --spin false --progress false --no-optional
 
 script: karma start karma.conf.js --single-run
 

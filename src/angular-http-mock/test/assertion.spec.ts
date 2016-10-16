@@ -3,7 +3,7 @@
  */
 import {ResponseOptions, Request} from '@angular/http';
 
-import {RequestAssertion, MatchRule} from './assertion';
+import {RequestAssertion, MatchRule} from '../src/assertion';
 
 
 describe('RequestAssertion', () => {
@@ -13,9 +13,11 @@ describe('RequestAssertion', () => {
 
   describe('rule', () => {
     let ra: RequestAssertion;
+
     beforeEach(() => {
       ra = new RequestAssertion(new MatchRule({method: 'GET'}), new ResponseOptions({status: 200}));
     });
+
     it('should be defined', () => {
       expect(ra.rule).toBeDefined();
     });
@@ -23,9 +25,11 @@ describe('RequestAssertion', () => {
 
   describe('responseOptions', () => {
     let ra: RequestAssertion;
+
     beforeEach(() => {
       ra = new RequestAssertion(new MatchRule({method: 'GET'}), new ResponseOptions({status: 200}));
     });
+
     it('should be defined', () => {
       expect(ra.responseOptions).toBeDefined();
     });
@@ -68,7 +72,7 @@ describe('RequestAssertion', () => {
       expect(ra.test(request)).toBe(false);
     });
 
-    it('should be true then request url match regexp', () => {
+    it('should be true then request url when regexp', () => {
       const ra = new RequestAssertion(new MatchRule({url: /myserver/}), new ResponseOptions({status: 200}));
       const request = new Request({url: 'http://myserver/'});
       expect(ra.test(request)).toBe(true);
