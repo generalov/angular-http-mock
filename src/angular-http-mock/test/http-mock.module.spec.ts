@@ -31,7 +31,7 @@ describe('HttpMockModule', () => {
 
   it('should mock response', inject([Http, HttpMock],
     (http: Http, httpMock: HttpMock) => {
-      httpMock.match({url: 'http://testserver/api/'}).andRespond({
+      httpMock.when({url: 'http://testserver/api/'}).respond({
         status: 200,
         body: 'ok'
       });
@@ -49,7 +49,7 @@ describe('HttpMockModule', () => {
 
   it('should mock error response', inject([Http, HttpMock],
     (http: Http, httpMock: HttpMock) => {
-      httpMock.match({url: 'http://testserver/api/'}).andRespond({
+      httpMock.when({url: 'http://testserver/api/'}).respond({
         status: 400,
         body: 'Bad request'
       });
@@ -66,11 +66,11 @@ describe('HttpMockModule', () => {
 
   it('should mock multiple responses', inject([Http, HttpMock],
     (http: Http, httpMock: HttpMock) => {
-      httpMock.match({url: 'http://testserver/404/'}).andRespond({
+      httpMock.when({url: 'http://testserver/404/'}).respond({
         status: 404,
         body: 'not found'
       });
-      httpMock.match({url: 'http://testserver/api/'}).andRespond({
+      httpMock.when({url: 'http://testserver/api/'}).respond({
         status: 200,
         body: 'ok'
       });
@@ -87,7 +87,7 @@ describe('HttpMockModule', () => {
 
   it('should record success response', inject([Http, HttpMock],
     (http: Http, httpMock: HttpMock) => {
-      httpMock.match({url: 'http://testserver/api/'}).andRespond({
+      httpMock.when({url: 'http://testserver/api/'}).respond({
         status: 200,
         body: 'ok'
       });
@@ -105,7 +105,7 @@ describe('HttpMockModule', () => {
 
   it('should record error response', inject([Http, HttpMock],
     (http: Http, httpMock: HttpMock) => {
-      httpMock.match({url: 'http://testserver/api/'}).andRespond({
+      httpMock.when({url: 'http://testserver/api/'}).respond({
         status: 404,
         body: 'not found'
       });
@@ -123,7 +123,7 @@ describe('HttpMockModule', () => {
 
   it('should record several responses', inject([Http, HttpMock],
     (http: Http, httpMock: HttpMock) => {
-      httpMock.match({url: 'http://testserver/api/'}).andRespond({
+      httpMock.when({url: 'http://testserver/api/'}).respond({
         status: 200,
         body: 'ok'
       });
@@ -155,8 +155,8 @@ describe('HttpMockModule', () => {
     it(`should be usable in success tests`, inject([Http, HttpMock],
       (http: Http, httpMock: HttpMock) => {
         httpMock
-          .match(wsSpec.request)
-          .andRespond(wsSpec.success);
+          .when(wsSpec.request)
+          .respond(wsSpec.success);
 
         dataProvider(http).subscribe(nextFn, errorFn);
 
@@ -170,8 +170,8 @@ describe('HttpMockModule', () => {
     it(`should be usable in error tests`, inject([Http, HttpMock],
       (http: Http, httpMock: HttpMock) => {
         httpMock
-          .match(wsSpec.request)
-          .andRespond(wsSpec.serverError);
+          .when(wsSpec.request)
+          .respond(wsSpec.serverError);
 
         dataProvider(http).subscribe(nextFn, errorFn);
 

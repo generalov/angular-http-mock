@@ -25,7 +25,7 @@ export class HttpMock {
     _backend.connections.subscribe((connection: MockConnection) => this.onConnection(connection));
   }
 
-  match(rule: MatchRuleArgs = {}) {
+  when(rule: MatchRuleArgs = {}) {
     if (this._currentRule) {
       throw new Error('Logic error');
     }
@@ -33,7 +33,7 @@ export class HttpMock {
     return this;
   }
 
-  andRespond(options: ResponseOptionsArgs) {
+  respond(options: ResponseOptionsArgs) {
     if (!this._currentRule) {
       throw new Error('Logic error');
     }

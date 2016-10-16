@@ -72,7 +72,7 @@ describe('RequestAssertion', () => {
       expect(ra.test(request)).toBe(false);
     });
 
-    it('should be true then request url match regexp', () => {
+    it('should be true then request url when regexp', () => {
       const ra = new RequestAssertion(new MatchRule({url: /myserver/}), new ResponseOptions({status: 200}));
       const request = new Request({url: 'http://myserver/'});
       expect(ra.test(request)).toBe(true);

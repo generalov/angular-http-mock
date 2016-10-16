@@ -89,8 +89,8 @@ describe('HttpMock usage', () => {
          let errorFn: jasmine.Spy = jasmine.createSpy('error');
 
          httpMock
-           .match({ url: 'app/heroes', method: 'GET' })
-           .andRespond({
+           .when({ url: 'app/heroes', method: 'GET' })
+           .respond({
               status: 200,
               body: '{"data": [{"id": 11, "name": "Mr. Nice" }]}'
            });
@@ -117,8 +117,8 @@ describe('HttpMock usage', () => {
          let errorFn: jasmine.Spy = jasmine.createSpy('error');
 
          httpMock
-           .match({ url: 'app/heroes', method: 'GET' })
-           .andRespond({
+           .when({ url: 'app/heroes', method: 'GET' })
+           .respond({
               status: 502,
               body: 'Bad gateway'
            });
@@ -147,6 +147,7 @@ Run `npm run test` to execute the unit tests via [Karma][karma].
 
 * [https://github.com/ryanzec/backend](https://github.com/ryanzec/backend)
 * [https://github.com/jasmine/jasmine-ajax/](https://github.com/jasmine/jasmine-ajax/)
+* [http://www.mock-server.com/](http://www.mock-server.com/creating_expectations.html)
 
 ## Links
 
