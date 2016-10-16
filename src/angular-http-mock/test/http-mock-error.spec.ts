@@ -3,7 +3,7 @@
  */
 import {Response, ResponseOptions} from '@angular/http';
 
-import {HttpMockError} from './http-mock-error';
+import {HttpMockError} from '../src/http-mock-error';
 
 
 describe('HttpMockError', () => {

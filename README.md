@@ -1,12 +1,14 @@
-# AngularHttpMock
+# Angular 2 http mock
 
 [![npm](https://img.shields.io/npm/v/@generalov/angular-http-mock.svg)](https://www.npmjs.com/package/@generalov/angular-http-mock)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/generalov/angular-http-mock/master/LICENSE)
 [![Build Status](https://travis-ci.org/generalov/angular-http-mock.svg?branch=master)](https://travis-ci.org/generalov/angular-http-mock)
 [![Code Climate](https://codeclimate.com/github/generalov/angular-http-mock/badges/gpa.svg)](https://codeclimate.com/github/generalov/angular-http-mock)
 [![Test Coverage](https://codeclimate.com/github/generalov/angular-http-mock/badges/coverage.svg)](https://codeclimate.com/github/generalov/angular-http-mock/coverage)
+[![dependencies Status](https://david-dm.org/generalov/angular-http-mock/status.svg)](https://david-dm.org/generalov/angular-http-mock)
+[![devDependencies Status](https://david-dm.org/generalov/angular-http-mock/dev-status.svg)](https://david-dm.org/generalov/angular-http-mock?type=dev)
 
-A utility library for mocking out the requests in Angular2 Http module.
+A utility library for mocking out the requests in Angular Http module.
 
 ## Installation
 
@@ -16,85 +18,118 @@ npm install --save-dev @generalov/angular-http-mock
 
 ## Usage
 
-### Setup test
+Let's look to the HeroService
+from [Hero Saga](https://angular.io/docs/ts/latest/tutorial/toh-pt6.html).
+It fetches a list of heroes from web API.
+
+Here is a version of `app/hero.service.ts`:
 
 ```TypeScript
-import {Response, HttpModule, Http} from '@angular/http';
-import {inject, TestBed} from '@angular/core/testing';
-import {MockBackend} from '@angular/http/testing';
+import { Injectable } from '@angular/core';
+import { Http, Response } from '@angular/http';
+import { Observable } from 'rxjs';
 
-import {HttpMockModule, HttpMock} from '@generalov/angular-http-mock';
+import { Hero } from './hero';
 
+@Injectable()
+export class HeroService {
+  private heroesUrl = 'app/heroes';  // URL to web api
 
-describe('Basic usage', () => {
-  let nextFn: jasmine.Spy,
-      errorFn: jasmine.Spy;
+  constructor(private http: Http) { }
+
+  getHeroes(): Observable<Hero[]> {
+    return this.http
+               .get(this.heroesUrl)
+               .map((r: Response) => r.json().data as Hero[])
+               .catch((error: any): string => Observable.throw('Server error'));
+  }
+}
+```
+
+We're going to trick the HTTP client into fetching and saving data from a mock service.
+
+### Setup a test suite
+
+`hero.service.spec.ts`
+
+```TypeScript
+import { inject, TestBed } from '@angular/core/testing';
+import { MockBackend } from '@angular/http/testing';
+
+import { HttpMockModule, HttpMock } from '@generalov/angular-http-mock';
+
+import { HeroService } from './hero.service';
+
+describe('HttpMock usage', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpModule, HttpMockModule]
+      imports: [
+        HeroService,
+        HttpMockModule
+      ]
     });
-    nextFn = jasmine.createSpy('next');
-    errorFn = jasmine.createSpy('error');
   });
 
   afterEach(inject([MockBackend], (backend: MockBackend) => {
     backend.verifyNoPendingRequests();
   }));
 
-  // put your scenarios here
+  // Put your specs here
 });
 ```
 
-### Test Http request
+### Mock a regular Http response
 
 ```TypeScript
-  it('should mock response',
-    inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
-      mock.match({url: /api/}).andRespond({
-        status: 200,
-        body: 'ok'
-      });
+  it(`should return a heroes array`,
+    inject([HeroService, HttpMock],
+      (heroService: HeroService, httpMock: HttpMock) => {
+         let nextFn: jasmine.Spy = jasmine.createSpy('next');
+         let errorFn: jasmine.Spy = jasmine.createSpy('error');
 
-      http.get('http://testserver/api/').subscribe(nextFn, errorFn);
+         httpMock
+           .when({ url: 'app/heroes', method: 'GET' })
+           .respond({
+              status: 200,
+              body: '{"data": [{"id": 11, "name": "Mr. Nice" }]}'
+           });
 
-      expect(errorFn).not.toHaveBeenCalled();
-      expect(nextFn).toHaveBeenCalled();
-      expect(mock.responses[0].status).toBe(200);
-      expect(mock.responses[0].url).toBe('http://testserver/api/');
-      expect(mock.responses[0].text()).toBe('ok');
+         heroService.getHeroes().subscribe(nextFn, errorFn);
+
+         expect(httpMock.responses[0].url).toBe('app/heroes');
+         expect(httpMock.responses[0].status).toBe(200);
+         expect(errorFn).not.toHaveBeenCalled();
+         expect(nextFn).toHaveBeenCalled();
+         expect(nextFn.calls.mostRecent().args[0][0].id).toBe(11);
+         expect(nextFn.calls.mostRecent().args[0][0].name).toBe('Mr. Nice');
     })
   );
 ```
 
-### Test data provider
+### Mock an error Http response
 
 ```TypeScript
-  let wsSpec = {
-    api: {
-      request: {method: 'GET', url: 'http://testserver/api/'},
-      success: {
-        status: 200,
-        body: '{"message": "ok"}'
-      }
-    }
-  };
+  it(`should handle a server error`,
+    inject([HeroService, HttpMock],
+      (heroService: HeroService, httpMock: HttpMock) => {
+         let nextFn: jasmine.Spy = jasmine.createSpy('next');
+         let errorFn: jasmine.Spy = jasmine.createSpy('error');
 
-  let dataProvider = (http) =>
-    return http.get('http://testserver/api/')
-      .map((res: Response) => res.json())
-      .map((data: {message: string}) => data.message)
-      .share();
+         httpMock
+           .when({ url: 'app/heroes', method: 'GET' })
+           .respond({
+              status: 502,
+              body: 'Bad gateway'
+           });
 
-  it(`should be usable in the typical data provider's test`,
-    inject([Http, HttpMock], (http: Http, mock: HttpMock) => {
-      mock.match(wsSpec.api.request).andRespond(wsSpec.api.success);
+         heroService.getHeroes().subscribe(nextFn, errorFn);
 
-      dataProvider(http).subscribe(nextFn, errorFn);
-
-      expect(errorFn).not.toHaveBeenCalled();
-      expect(nextFn).toHaveBeenCalled();
-      expect(nextFn.calls.mostRecent().args[0]).toBe('ok');
+         expect(httpMock.responses[0].url).toBe('app/heroes');
+         expect(httpMock.responses[0].status).toBe(502);
+         expect(nextFn).not.toHaveBeenCalled();
+         expect(errorFn).toHaveBeenCalled();
+         expect(errorFn.calls.mostRecent().args[0]).toBe('Server error');
     })
   );
 ```
@@ -112,6 +147,7 @@ Run `npm run test` to execute the unit tests via [Karma][karma].
 
 * [https://github.com/ryanzec/backend](https://github.com/ryanzec/backend)
 * [https://github.com/jasmine/jasmine-ajax/](https://github.com/jasmine/jasmine-ajax/)
+* [http://www.mock-server.com/](http://www.mock-server.com/creating_expectations.html)
 
 ## Links
 
