@@ -5,6 +5,8 @@
 [![Build Status](https://travis-ci.org/generalov/angular-http-mock.svg?branch=master)](https://travis-ci.org/generalov/angular-http-mock)
 [![Code Climate](https://codeclimate.com/github/generalov/angular-http-mock/badges/gpa.svg)](https://codeclimate.com/github/generalov/angular-http-mock)
 [![Test Coverage](https://codeclimate.com/github/generalov/angular-http-mock/badges/coverage.svg)](https://codeclimate.com/github/generalov/angular-http-mock/coverage)
+[![dependencies Status](https://david-dm.org/generalov/angular-http-mock/status.svg)](https://david-dm.org/generalov/angular-http-mock)
+[![devDependencies Status](https://david-dm.org/generalov/angular-http-mock/dev-status.svg)](https://david-dm.org/generalov/angular-http-mock?type=dev)
 
 A utility library for mocking out the requests in Angular2 Http module.
 
