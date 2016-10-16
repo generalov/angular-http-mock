@@ -1,6 +1,6 @@
 import {inject, TestBed} from '@angular/core/testing';
 
-import {HttpMock} from './http-mock';
+import {HttpMock} from '../src/http-mock';
 import {MockBackend} from '@angular/http/testing';
 import {Observable} from 'rxjs';
 
@@ -38,44 +38,44 @@ describe('HttpMock', () => {
     }));
   });
 
-  describe('match()', () => {
+  describe('when()', () => {
     it('should be defined', inject([HttpMock], (httpMock: HttpMock) => {
-      expect(httpMock.match).toBeDefined();
+      expect(httpMock.when).toBeDefined();
     }));
 
     it('should accept GET method', inject([HttpMock], (httpMock: HttpMock) => {
-      expect(httpMock.match(({method: 'GET'}))).toBeDefined();
+      expect(httpMock.when(({method: 'GET'}))).toBeDefined();
     }));
 
     it('should be fluent', inject([HttpMock], (httpMock: HttpMock) => {
-      expect(httpMock.match(({method: 'GET'}))).toBe(httpMock);
+      expect(httpMock.when(({method: 'GET'}))).toBe(httpMock);
     }));
 
     it(`should throw Error if previous rule incomplete`, inject([HttpMock], (httpMock: HttpMock) => {
-      httpMock.match({method: 'GET'});
-      expect(() => httpMock.match({method: 'GET'})).toThrowError('Logic error');
+      httpMock.when({method: 'GET'});
+      expect(() => httpMock.when({method: 'GET'})).toThrowError('Logic error');
     }));
 
   });
 
-  describe('andRespond()', () => {
+  describe('respond()', () => {
     it('should be defined', inject([HttpMock], (httpMock: HttpMock) => {
-      expect(httpMock.andRespond).toBeDefined();
+      expect(httpMock.respond).toBeDefined();
     }));
 
     it(`should throw Error if no rules`, inject([HttpMock], (httpMock: HttpMock) => {
-      expect(() => httpMock.andRespond({status: 200})).toThrowError('Logic error');
+      expect(() => httpMock.respond({status: 200})).toThrowError('Logic error');
     }));
 
     it('should append rule', inject([HttpMock], (httpMock: HttpMock) => {
       expect(httpMock.assertions.length).toBe(0);
-      httpMock.match({method: 'GET'}).andRespond({status: 200});
+      httpMock.when({method: 'GET'}).respond({status: 200});
       expect(httpMock.assertions.length).toBe(1);
     }));
 
     it('should be fluent', inject([HttpMock], (httpMock: HttpMock) => {
-      httpMock.match({method: 'GET'});
-      expect(httpMock.andRespond({status: 200})).toBe(httpMock);
+      httpMock.when({method: 'GET'});
+      expect(httpMock.respond({status: 200})).toBe(httpMock);
     }));
   });
 
