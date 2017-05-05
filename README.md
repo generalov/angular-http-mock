@@ -1,5 +1,7 @@
 # Angular 2 http mock
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/generalov/angular-http-mock.svg)](https://greenkeeper.io/)
+
 [![npm](https://img.shields.io/npm/v/@generalov/angular-http-mock.svg)](https://www.npmjs.com/package/@generalov/angular-http-mock)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/generalov/angular-http-mock/master/LICENSE)
 [![Build Status](https://travis-ci.org/generalov/angular-http-mock.svg?branch=master)](https://travis-ci.org/generalov/angular-http-mock)
